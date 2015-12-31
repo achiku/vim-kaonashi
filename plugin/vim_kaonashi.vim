@@ -13,7 +13,12 @@ function! KaonashiHello(name)
   python3 kaonashi.greeting(vim.eval('a:name'))
 endfunction
 
-command! -nargs=1 Hello call KaonashiHello(<f-args>)
+function! KaonashiListNote()
+  python3 kaonashi.list_note_titles()
+endfunction
+
+command! -nargs=1 KaonashiHello call KaonashiHello(<f-args>)
+command! KaonashiListNote call KaonashiListNote()
 
 let &cpo = s:save_cpo
 unlet s:save_cpo
