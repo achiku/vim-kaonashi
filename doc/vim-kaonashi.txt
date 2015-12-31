@@ -1,0 +1,25 @@
+*vim-kaonashi.txt* A short multi line description of your plugin
+
+===============================================================================
+CONTENTS                                                         *vim-kaonashi*
+
+    1. Intro ............................................. |vim-kaonashi-intro|
+    2. Requirements ............................... |vim-kaonashi-requirements|
+    3. Usage ............................................. |vim-kaonashi-usage|
+    4. Licence ......................................... |vim-kaonashi-licence|
+===============================================================================
+1. Intro                                                   *vim-kaonashi-intro*
+
+Overview of plugin
+
+2. Requirements                                     *vim-kaonashi-requirements*
+
+What additional programs are required to run the plugin
+
+3. Usage                                                   *vim-kaonashi-usage*
+
+How to use the plugin. What functions does it give the user?
+
+4. Licence                                               *vim-kaonashi-licence*
+
+This is open source make sure to include a licence
