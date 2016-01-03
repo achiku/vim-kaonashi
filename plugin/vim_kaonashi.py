@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
 import json
+import os
 import re
 import sys
-from urllib import request
+from datetime import datetime
+from urllib import parse, request
 
 import vim
 
@@ -47,7 +49,7 @@ class Kaonashi(object):
         else:
             b.append(s)
 
-    def list_note_titles(self):
+    def list_notes(self):
         """List note titles"""
         endpoint = self.base_url + '/note'
         with request.urlopen(endpoint) as resp:
@@ -84,7 +86,7 @@ class Kaonashi(object):
             vim.command("execute bufwinnr(bufnr('{}')).'wincmd w'".format(
                 self.current_edit_buf_name))
             vim.command("enew")
-            self.current_edit_buf_name = "{0}_{1}".format(note_id, title)
+            self.current_edit_buf_name = "{0}:{1}.kaonashi".format(note_id, title)
             vim.command("file '{}'".format(self.current_edit_buf_name))
             vim.command("set syntax=kaonashi")
             vim.command("setlocal noswapfile")
@@ -93,5 +95,21 @@ class Kaonashi(object):
             self.bwrite(body)
         else:
             pass
+
+    def update_note(self):
+        """Update a note"""
+        buffer_name = os.path.basename(vim.current.buffer.name).replace("'", '')
+        note_id, title_tmp = buffer_name.split(':')
+        title = title_tmp.replace('.kaonashi', '')
+        t = datetime.now()
+        data = {
+            'title': title,
+            'body': 'updated body ' + t.strftime('%Y/%m/%d %H%M%S')}
+        data = parse.urlencode(data)
+        data = data.encode('utf-8')
+        req = request.Request(
+            url=self.base_url + '/note/{}'.format(note_id),
+            data=data, method='PUT')
+        request.urlopen(req)
 
 kaonashi = Kaonashi()

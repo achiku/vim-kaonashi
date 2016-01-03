@@ -10,10 +10,15 @@ py3file <sfile>:h:h/plugin/vim_kaonashi.py
 python3 import vim
 
 function! KaonashiListNote()
-    python3 kaonashi.list_note_titles()
+    python3 kaonashi.list_notes()
     noremap <buffer> o :python3 kaonashi.get_note()<cr>
 endfunction
 
+function! KaonashiSaveNote()
+    python3 kaonashi.update_note()
+endfunction
+
+command! KaonashiSaveNote call KaonashiSaveNote()
 command! KaonashiListNote call KaonashiListNote()
 
 let &cpo = s:save_cpo
