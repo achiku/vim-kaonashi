@@ -58,6 +58,7 @@ class Kaonashi(object):
         vim.command("enew")
         vim.command("file edit.kaonashi")
         vim.command('40vnew notelist.kaonashi')
+        self.current_edit_buf_name = 'edit.kaonashi'
         vim.command("set syntax=kaonashi")
         vim.command("setlocal noswapfile")
         vim.command("setlocal buftype=nofile")
