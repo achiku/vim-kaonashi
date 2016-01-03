@@ -7,7 +7,7 @@ def test_list_note():
     k.list_note_titles()
 
 
-def test_vimmodule():
+def test_note():
     from ..vim_kaonashi import Kaonashi
     k = Kaonashi()
-    k.vimmodule()
+    k.note()
