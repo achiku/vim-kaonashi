@@ -27,10 +27,6 @@ class Kaonashi(object):
 
     def bwrite(self, s, target_buffer=None):
         b = target_buffer or vim.current.buffer
-        # Never write more than two blank lines in a row
-        if not s.strip() and not b[-1].strip() and not b[-2].strip():
-            return
-
         # Vim buffer.append() cannot accept unicode type,
         # must first encode to UTF-8 string
         if isinstance(s, unicode):
@@ -91,8 +87,9 @@ class Kaonashi(object):
             vim.command("set syntax=kaonashi")
             vim.command("setlocal noswapfile")
             vim.command("setlocal buftype=nofile")
-            self.bwrite("#ID {0}: {1}".format(note_id, title))
-            self.bwrite(body)
+            note = ["#ID {0}: {1}".format(note_id, title)]
+            note.extend(body.split('\n'))
+            vim.current.buffer[:] = note
         else:
             pass
 
@@ -101,10 +98,8 @@ class Kaonashi(object):
         buffer_name = os.path.basename(vim.current.buffer.name).replace("'", '')
         note_id, title_tmp = buffer_name.split(':')
         title = title_tmp.replace('.kaonashi', '')
-        t = datetime.now()
-        data = {
-            'title': title,
-            'body': 'updated body ' + t.strftime('%Y/%m/%d %H%M%S')}
+        body = "\n".join(vim.current.buffer[1:])
+        data = {'title': title, 'body': body}
         data = parse.urlencode(data)
         data = data.encode('utf-8')
         req = request.Request(
