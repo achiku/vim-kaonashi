@@ -3,7 +3,6 @@ import json
 import os
 import re
 import sys
-from datetime import datetime
 from urllib import parse, request
 
 import vim
@@ -96,8 +95,9 @@ class Kaonashi(object):
     def update_note(self):
         """Update a note"""
         buffer_name = os.path.basename(vim.current.buffer.name).replace("'", '')
-        note_id, title_tmp = buffer_name.split(':')
-        title = title_tmp.replace('.kaonashi', '')
+        note_id, _ = buffer_name.split(':')
+        m = re.match("#ID \d+: (.*)", vim.current.buffer[0])
+        title = m.group(1)
         body = "\n".join(vim.current.buffer[1:])
         data = {'title': title, 'body': body}
         data = parse.urlencode(data)

@@ -10,12 +10,14 @@ py3file <sfile>:h:h/plugin/vim_kaonashi.py
 python3 import vim
 
 function! KaonashiListNote()
-    python3 kaonashi.list_notes()
-    noremap <buffer> o :python3 kaonashi.get_note()<cr>
+  python3 kaonashi.list_notes()
+  noremap <buffer> o :python3 kaonashi.get_note()<cr>
+  "" custom syntax highlight
+  au BufRead,BufNewFile *.kaonashi  set filetype=markdown
 endfunction
 
 function! KaonashiSaveNote()
-    python3 kaonashi.update_note()
+  python3 kaonashi.update_note()
 endfunction
 
 command! KaonashiSaveNote call KaonashiSaveNote()
