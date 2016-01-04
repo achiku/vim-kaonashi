@@ -62,9 +62,7 @@ class Kaonashi(object):
         for note in notes:
             note_id = note.get('id', '')
             title = note.get('title', '')
-            updated = note.get('updated', '')
             self.bwrite("+ ID:{} {}".format(note_id, title))
-            self.bwrite("  [{}]".format(updated))
 
     def get_note(self):
         """Open a note"""
@@ -83,7 +81,7 @@ class Kaonashi(object):
             vim.command("enew")
             self.current_edit_buf_name = "{0}:{1}.kaonashi".format(note_id, title)
             vim.command("file '{}'".format(self.current_edit_buf_name))
-            vim.command("set syntax=kaonashi")
+            vim.command("set syntax=markdown")
             vim.command("setlocal noswapfile")
             vim.command("setlocal buftype=nofile")
             note = ["#ID {0}: {1}".format(note_id, title)]
