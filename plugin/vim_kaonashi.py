@@ -45,7 +45,7 @@ class Kaonashi(object):
             b.append(s)
 
     def list_notes(self):
-        """List note titles"""
+        """List note titles."""
         endpoint = self.base_url + '/note'
         with request.urlopen(endpoint) as resp:
             data = json.loads(
@@ -62,10 +62,12 @@ class Kaonashi(object):
         for note in notes:
             note_id = note.get('id', '')
             title = note.get('title', '')
+            updated = note.get('updated', '')
             self.bwrite("+ ID:{} {}".format(note_id, title))
+            self.bwrite("  [{}]".format(updated))
 
     def get_note(self):
-        """Open a note"""
+        """Open a note."""
         line = vim.current.line
         m = self.note_id_regx.match(line)
         if m:
@@ -91,7 +93,7 @@ class Kaonashi(object):
             pass
 
     def update_note(self):
-        """Update a note"""
+        """Update a note."""
         buffer_name = os.path.basename(vim.current.buffer.name).replace("'", '')
         note_id, _ = buffer_name.split(':')
         m = re.match("#ID \d+: (.*)", vim.current.buffer[0])
