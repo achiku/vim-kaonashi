@@ -3,7 +3,7 @@ import json
 import os
 import re
 import sys
-from urllib import parse, request
+from urllib import request
 
 import vim
 
@@ -81,30 +81,37 @@ class Kaonashi(object):
             vim.command("execute bufwinnr(bufnr('{}')).'wincmd w'".format(
                 self.current_edit_buf_name))
             vim.command("enew")
-            self.current_edit_buf_name = "{0}:{1}.kaonashi".format(note_id, title)
-            vim.command("file '{}'".format(self.current_edit_buf_name))
+            self.current_edit_buf_name = "{0}.kaonashi".format(note_id, title)
+            vim.command("file {}".format(self.current_edit_buf_name))
             vim.command("set syntax=markdown")
             vim.command("setlocal noswapfile")
             vim.command("setlocal buftype=nofile")
             note = ["#ID {0}: {1}".format(note_id, title)]
-            note.extend(body.split('\n'))
+            if body is not None:
+                note.extend(body.split('\n'))
             vim.current.buffer[:] = note
         else:
             pass
 
     def update_note(self):
         """Update a note."""
-        buffer_name = os.path.basename(vim.current.buffer.name).replace("'", '')
-        note_id, _ = buffer_name.split(':')
-        m = re.match("#ID \d+: (.*)", vim.current.buffer[0])
-        title = m.group(1)
+        buffer_name = os.path.basename(vim.current.buffer.name)
+        note_id = buffer_name.replace('.kaonashi', '')
+        m = re.match("#ID (\d+): (.*)", vim.current.buffer[0])
+        note_id = m.group(1)
+        title = m.group(2)
         body = "\n".join(vim.current.buffer[1:])
-        data = {'title': title, 'body': body}
-        data = parse.urlencode(data)
-        data = data.encode('utf-8')
+        data = {'data': {'title': title, 'body': body}}
+        jsondata = json.dumps(data)
+        jsondataasbytes = jsondata.encode('utf-8')
         req = request.Request(
+            method='PUT',
             url=self.base_url + '/note/{}'.format(note_id),
-            data=data, method='PUT')
-        request.urlopen(req)
+            headers={
+                'Content-Type': 'application/json',
+                'Content-Length': len(jsondataasbytes),
+            }
+        )
+        request.urlopen(req, jsondataasbytes)
 
 kaonashi = Kaonashi()
