@@ -62,9 +62,7 @@ class Kaonashi(object):
         for note in notes:
             note_id = note.get('id', '')
             title = note.get('title', '')
-            updated = note.get('updated', '')
             self.bwrite("+ ID:{} {}".format(note_id, title))
-            self.bwrite("  [{}]".format(updated))
 
     def get_note(self):
         """Open a note."""
@@ -81,11 +79,12 @@ class Kaonashi(object):
             vim.command("execute bufwinnr(bufnr('{}')).'wincmd w'".format(
                 self.current_edit_buf_name))
             vim.command("enew")
-            self.current_edit_buf_name = "{0}.kaonashi".format(note_id, title)
+            self.current_edit_buf_name = '{0}.kaonashi'.format(note_id, title)
             vim.command("file {}".format(self.current_edit_buf_name))
             vim.command("set syntax=markdown")
             vim.command("setlocal noswapfile")
             vim.command("setlocal buftype=nofile")
+            vim.command("noremap <buffer> :w :python3 kaonashi.update_note()<CR>")
             note = ["#ID {0}: {1}".format(note_id, title)]
             if body is not None:
                 note.extend(body.split('\n'))
@@ -114,4 +113,20 @@ class Kaonashi(object):
         )
         request.urlopen(req, jsondataasbytes)
 
-kaonashi = Kaonashi()
+    def create_note(self):
+        """Create a note."""
+        data = {'data': {'title': '', 'body': ''}}
+        jsondata = json.dumps(data)
+        jsondataasbytes = jsondata.encode('utf-8')
+        req = request.Request(
+            method='POST',
+            url=self.base_url + '/note',
+            headers={
+                'Content-Type': 'application/json',
+                'Content-Length': len(jsondataasbytes),
+            }
+        )
+        request.urlopen(req, jsondataasbytes)
+
+if __name__ == '__main__':
+    kaonashi = Kaonashi()

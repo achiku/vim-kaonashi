@@ -11,8 +11,7 @@ python3 import vim
 
 function! KaonashiListNote()
   python3 kaonashi.list_notes()
-  noremap <buffer> o :python3 kaonashi.get_note()<cr>
-  "" custom syntax highlight
+  noremap <buffer> o :python3 kaonashi.get_note()<CR>
   au BufRead,BufNewFile *.kaonashi  set filetype=markdown
 endfunction
 
@@ -20,8 +19,13 @@ function! KaonashiSaveNote()
   python3 kaonashi.update_note()
 endfunction
 
+function! KaonashiCreateNote()
+  python3 kaonashi.create_note()
+endfunction
+
 command! KaonashiSaveNote call KaonashiSaveNote()
 command! KaonashiListNote call KaonashiListNote()
+command! KaonashiCreateNote call KaonashiCreateNote()
 
 let &cpo = s:save_cpo
 unlet s:save_cpo
