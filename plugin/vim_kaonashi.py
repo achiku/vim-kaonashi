@@ -93,18 +93,23 @@ class Kaonashi(object):
             vim.command("execute bufwinnr(bufnr('{}')).'wincmd w'".format(
                 self.current_edit_buf_name))
             vim.command("enew")
-            self.current_edit_buf_name = '{0}.kaonashi'.format(note_id, title)
+            self.current_edit_buf_name = '{0}.kaonashi'.format(note_id)
             vim.command("file {}".format(self.current_edit_buf_name))
             vim.command("set syntax=markdown")
             vim.command("setlocal noswapfile")
             vim.command("setlocal buftype=nofile")
-            vim.command("noremap <buffer> :w :python3 kaonashi.update_note()<CR>")
+            vim.command("noremap <buffer> :w :KaonashiSaveNote<CR>")
             note = ["#ID {0}: {1}".format(note_id, title)]
             if body is not None:
                 note.extend(body.split('\n'))
             vim.current.buffer[:] = note
         else:
             pass
+
+    def close_note_list(self):
+        """Close note list."""
+        vim.command("execute bufwinnr(bufnr('{}')).'wincmd w'".format('notelist.kaonashi'))
+        vim.command("quit")
 
     def update_note(self):
         """Update a note."""
