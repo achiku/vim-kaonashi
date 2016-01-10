@@ -64,6 +64,20 @@ class Kaonashi(object):
             title = note.get('title', '')
             self.bwrite("+ ID:{} {}".format(note_id, title))
 
+    def delete_note(self):
+        """Delete a note."""
+        line = vim.current.line
+        m = self.note_id_regx.match(line)
+        if m:
+            note_id = m.group(1)
+            req = request.Request(
+                method='DELETE',
+                url=self.base_url + '/note/{}'.format(note_id),
+            )
+            request.urlopen(req)
+        else:
+            pass
+
     def get_note(self):
         """Open a note."""
         line = vim.current.line

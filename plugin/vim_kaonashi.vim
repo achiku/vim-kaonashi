@@ -12,6 +12,7 @@ python3 import vim
 function! KaonashiListNote()
   python3 kaonashi.list_notes()
   noremap <buffer> o :python3 kaonashi.get_note()<CR>
+  noremap <buffer> d :python3 kaonashi.delete_note()<CR>
   au BufRead,BufNewFile *.kaonashi  set filetype=markdown
 endfunction
 
