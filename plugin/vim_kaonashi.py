@@ -44,6 +44,21 @@ class Kaonashi(object):
         else:
             b.append(s)
 
+    def refresh_note_list(self):
+        """Close note list."""
+        vim.command("execute bufwinnr(bufnr('{}')).'wincmd w'".format('notelist.kaonashi'))
+        endpoint = self.base_url + '/note'
+        vim.current.buffer[:] = None
+        with request.urlopen(endpoint) as resp:
+            data = json.loads(
+                resp.read().decode(resp.info().get_param('charset') or 'utf-8'))
+            notes = data['data']
+        for note in notes:
+            note_id = note.get('id', '')
+            title = note.get('title', '')
+            self.bwrite("+ ID:{} {}".format(note_id, title))
+        vim.command("execute bufwinnr(bufnr('{}')).'wincmd w'".format(self.current_edit_buf_name))
+
     def list_notes(self):
         """List note titles."""
         endpoint = self.base_url + '/note'
@@ -75,6 +90,7 @@ class Kaonashi(object):
                 url=self.base_url + '/note/{}'.format(note_id),
             )
             request.urlopen(req)
+            self.refresh_note_list()
         else:
             pass
 
@@ -105,11 +121,6 @@ class Kaonashi(object):
             vim.current.buffer[:] = note
         else:
             pass
-
-    def close_note_list(self):
-        """Close note list."""
-        vim.command("execute bufwinnr(bufnr('{}')).'wincmd w'".format('notelist.kaonashi'))
-        vim.command("quit")
 
     def update_note(self):
         """Update a note."""

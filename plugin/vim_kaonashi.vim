@@ -18,13 +18,12 @@ endfunction
 
 function! KaonashiSaveNote()
   python3 kaonashi.update_note()
-  python3 kaonashi.close_note_list()
-  python3 kaonashi.list_notes()
+  python3 kaonashi.refresh_note_list()
 endfunction
 
 function! KaonashiCreateNote()
   python3 kaonashi.create_note()
-  python3 kaonashi.list_notes()
+  python3 kaonashi.refresh_note_list()
 endfunction
 
 command! KaonashiSaveNote call KaonashiSaveNote()
