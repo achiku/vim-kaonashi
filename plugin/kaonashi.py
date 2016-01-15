@@ -158,5 +158,6 @@ class Kaonashi(object):
         )
         request.urlopen(req, jsondataasbytes)
 
+
 if __name__ == '__main__':
     kaonashi = Kaonashi()
