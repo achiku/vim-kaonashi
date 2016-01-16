@@ -1,5 +1,16 @@
 # vim-kaonashi
 
+kaonashi vim/nvim UI
+
+## Why created
+
+I'm developing personal headless note app called [kaonashi](https://github.com/achiku/kaonashi). vim-kaonashi is one of the UIs for kaonashi.
+
+## Demo
+
+![](./image/demo.gif)
+
+
 ## Installation
 
 Use your plugin manager of choice.
@@ -15,8 +26,3 @@ Use your plugin manager of choice.
 - [vim-plug](https://github.com/junegunn/vim-plug)
   - Add `Plug 'https://github.com/achiku/vim-kaonashi'` to .vimrc
   - Run `:PlugInstall`
-
-## Todo
-
-1. Write a plugin
-2. Write documentation
