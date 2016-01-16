@@ -18,19 +18,10 @@ else
     finish
 endif
 
-
 " Import Python code
 execute "Python import sys"
 execute "Python sys.path.append(r'" . expand("<sfile>:p:h") . "')"
-
-" Python << EOF
-" if 'kaonashi' not in sys.modules:
-"     import kaonashi
-" else:
-"     import imp
-"     # Reload python module to avoid errors when updating plugin
-"     hackernews = imp.reload(kaonashi)
-" EOF
+execute "Python sys.path.append(r'" . expand("<sfile>:p:h") . "/requests" . "')"
 
 execute "PyFile <sfile>:h:h/plugin/kaonashi.py"
 

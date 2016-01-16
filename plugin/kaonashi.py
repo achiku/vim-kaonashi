@@ -1,10 +1,12 @@
 # -*- coding: utf-8 -*-
+from __future__ import print_function
+
 import json
 import os
 import re
 import sys
-from urllib import request
 
+import requests
 import vim
 
 if sys.version_info >= (3, 0):
@@ -46,26 +48,24 @@ class Kaonashi(object):
 
     def refresh_note_list(self):
         """Close note list."""
-        vim.command("execute bufwinnr(bufnr('{}')).'wincmd w'".format('notelist.kaonashi'))
+        vim.command("execute bufwinnr(bufnr('%s')).'wincmd w'" % ('notelist.kaonashi',))
         endpoint = self.base_url + '/note'
         vim.current.buffer[:] = None
-        with request.urlopen(endpoint) as resp:
-            data = json.loads(
-                resp.read().decode(resp.info().get_param('charset') or 'utf-8'))
-            notes = data['data']
+        resp = requests.get(endpoint)
+        data = resp.json()
+        notes = data['data']
         for note in notes:
             note_id = note.get('id', '')
             title = note.get('title', '')
-            self.bwrite("+ ID:{} {}".format(note_id, title))
-        vim.command("execute bufwinnr(bufnr('{}')).'wincmd w'".format(self.current_edit_buf_name))
+            self.bwrite("+ ID:%s %s" % (note_id, title))
+        vim.command("execute bufwinnr(bufnr('%s')).'wincmd w'" % (self.current_edit_buf_name,))
 
     def list_notes(self):
         """List note titles."""
         endpoint = self.base_url + '/note'
-        with request.urlopen(endpoint) as resp:
-            data = json.loads(
-                resp.read().decode(resp.info().get_param('charset') or 'utf-8'))
-            notes = data['data']
+        resp = requests.get(endpoint)
+        data = resp.json()
+        notes = data['data']
 
         vim.command("enew")
         vim.command("file edit.kaonashi")
@@ -77,7 +77,7 @@ class Kaonashi(object):
         for note in notes:
             note_id = note.get('id', '')
             title = note.get('title', '')
-            self.bwrite("+ ID:{} {}".format(note_id, title))
+            self.bwrite("+ ID:%s %s" % (note_id, title))
 
     def delete_note(self):
         """Delete a note."""
@@ -85,11 +85,8 @@ class Kaonashi(object):
         m = self.note_id_regx.match(line)
         if m:
             note_id = m.group(1)
-            req = request.Request(
-                method='DELETE',
-                url=self.base_url + '/note/{}'.format(note_id),
-            )
-            request.urlopen(req)
+            endpoint = self.base_url + '/note/%s' % (note_id,)
+            requests.delete(endpoint)
             self.refresh_note_list()
         else:
             pass
@@ -100,22 +97,21 @@ class Kaonashi(object):
         m = self.note_id_regx.match(line)
         if m:
             note_id = m.group(1)
-            endpoint = self.base_url + '/note/{}'.format(note_id)
-            with request.urlopen(endpoint) as resp:
-                data = json.loads(resp.read().decode('utf-8'))
+            endpoint = self.base_url + '/note/%s' % (note_id,)
+            resp = requests.get(endpoint)
+            data = resp.json()
             note = data['data']
             body = note['body']
             title = note['title']
-            vim.command("execute bufwinnr(bufnr('{}')).'wincmd w'".format(
-                self.current_edit_buf_name))
+            vim.command("execute bufwinnr(bufnr('%s')).'wincmd w'" % (self.current_edit_buf_name,))
             vim.command("enew")
-            self.current_edit_buf_name = '{0}.kaonashi'.format(note_id)
-            vim.command("file {}".format(self.current_edit_buf_name))
+            self.current_edit_buf_name = '%s.kaonashi' % (note_id,)
+            vim.command("file %s" % (self.current_edit_buf_name,))
             vim.command("set syntax=markdown")
             vim.command("setlocal noswapfile")
             vim.command("setlocal buftype=nofile")
             vim.command("noremap <buffer> :w :KaonashiSaveNote<CR>")
-            note = ["#ID {0}: {1}".format(note_id, title)]
+            note = ["#ID %s: %s" % (note_id, title)]
             if body is not None:
                 note.extend(body.split('\n'))
             vim.current.buffer[:] = note
@@ -130,33 +126,15 @@ class Kaonashi(object):
         note_id = m.group(1)
         title = m.group(2)
         body = "\n".join(vim.current.buffer[1:])
-        data = {'data': {'title': title, 'body': body}}
-        jsondata = json.dumps(data)
-        jsondataasbytes = jsondata.encode('utf-8')
-        req = request.Request(
-            method='PUT',
-            url=self.base_url + '/note/{}'.format(note_id),
-            headers={
-                'Content-Type': 'application/json',
-                'Content-Length': len(jsondataasbytes),
-            }
-        )
-        request.urlopen(req, jsondataasbytes)
+        payload = {'data': {'title': title, 'body': body}}
+        endpoint = self.base_url+'/note/%s' % (note_id,)
+        requests.put(endpoint, data=json.dumps(payload))
 
     def create_note(self):
         """Create a note."""
-        data = {'data': {'title': '', 'body': ''}}
-        jsondata = json.dumps(data)
-        jsondataasbytes = jsondata.encode('utf-8')
-        req = request.Request(
-            method='POST',
-            url=self.base_url + '/note',
-            headers={
-                'Content-Type': 'application/json',
-                'Content-Length': len(jsondataasbytes),
-            }
-        )
-        request.urlopen(req, jsondataasbytes)
+        payload = {'data': {'title': '', 'body': ''}}
+        endpoint = self.base_url + '/note'
+        requests.post(endpoint, data=json.dumps(payload))
 
 
 if __name__ == '__main__':
